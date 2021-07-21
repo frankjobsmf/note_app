@@ -22,7 +22,7 @@ export const useFetchNote = () => {
 
 };
 
-export const useFetchNoteById = ( id = null ) => {
+export const useFetchNoteById = ( id = null) => {
     const [ value, setValue ] = useState({
         data: []
     });
@@ -35,6 +35,6 @@ export const useFetchNoteById = ( id = null ) => {
                 });
             } );
         } );
-    }, []);
+    }, [id]);
     return value;
 };

@@ -7,8 +7,6 @@ const init = () => {
     return JSON.parse( localStorage.getItem( 'user' ) ) || { logged: false };
 }
 
-
-
 const NoteApp = () => {
 
     const [ user, dispatch ] = useReducer(authReducer, {}, init);

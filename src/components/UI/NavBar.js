@@ -10,8 +10,6 @@ const Navbar = () => {
     const history = useHistory();    
 
     const handleLogout = () => {
-        console.log('hola mundo');
-
         dispatch({
             type: types.logout
         });
@@ -41,10 +39,20 @@ const Navbar = () => {
                         Perfil
                     </NavLink>
                 </div>
+                <div className="navbar-nav">
 
-
-
+                    <NavLink 
+                        activeClassName="active"
+                        className="nav-item nav-link" 
+                        exact
+                        to="/add-note"
+                    >
+                        Crear
+                    </NavLink>
+                </div>
             </div>
+
+            
 
 
             <div className="navbar-collapse collapse w-100 order-3 dual-collapse2 position-relative">      

@@ -1,73 +1,51 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../auth/AuthContext';
-import { LoginUserAPI } from '../../helpers/userService';
+import React from 'react';
+import { RegisterUserAPI } from '../../helpers/userService';
 import { useForm } from '../../hooks/useForm';
-import { types } from '../../types/types';
-import jwt_decode from 'jwt-decode';
 
-const LoginScreen = ({ history }) => {
-
-    const { dispatch } = useContext( AuthContext );
+const RegisterScreen = ({ history }) => {
 
     const [ value, handleInputChange ] = useForm({
         username: '',
+        email: '',
         password: ''
     });
     
-    const { username, password } = value;
+    const { username, email, password } = value;
 
-    const handleLogin = ( e ) => {
+    const handleRegister = ( e ) => {
         
         e.preventDefault();
 
-        if( username === '' && password === '' ){
+        if( username === '' && email === '' && password === '' ){
             return;
         } else {
 
             const person = {
                 username: username,
+                email: email,
                 password: password
             }
 
-            const token = LoginUserAPI( person );
+            const data = RegisterUserAPI( person );
 
-            token
-                .then( resp => resp.json() )
-                .then( data => {
-                    console.log( data.token );
-                
-                    const { token } = data;
-
-                    let decoded_token = jwt_decode( token );
-
-
-                    const user = {
-                        id: decoded_token.user.id,
-                        username: decoded_token.user.username,
-                        token: data.token
+            data
+                .then( response => {
+                    if ( response.ok){
+                        setTimeout( () => {
+                            history.push( '/login' )
+                        }, 500)
+                    }else{
+                        return ;
                     }
-                    
+                } )
 
-                    dispatch({
-                        type: types.login,
-                        payload: user
-                    });
-                } );
         }
 
     }
 
-    const handleRegister = (e) => {
-        e.preventDefault();
-
-        setTimeout(() => {
-            history.push('/register')
-        })
-    }
-
     return (
         <div className="container mt-5">
-            <h2 className="text-center">NoteApp - Iniciar sesión</h2>
+            <h2 className="text-center">NoteApp - Registrate</h2>
             <hr />
 
 
@@ -86,6 +64,17 @@ const LoginScreen = ({ history }) => {
                             />
                         </div>
                         <div className="form-group">
+                            <label>Email</label>
+                            <input 
+                                type="email" 
+                                className="form-control" 
+                                placeholder="Email"
+                                name="email"
+                                onChange={ handleInputChange }
+                                autoComplete="off"
+                            />
+                        </div>
+                        <div className="form-group">
                             <label>Password</label>
                             <input 
                                 type="password" 
@@ -96,13 +85,6 @@ const LoginScreen = ({ history }) => {
                             />
                         </div>
                         <div className="d-flex justify-content-around">
-                            <button 
-                                type="submit" 
-                                className="btn btn-primary mt-3"
-                                onClick={ handleLogin }
-                                style={{ width: "200px" }}
-                            >Ingresar
-                            </button>
                             <button 
                                 type="submit" 
                                 className="btn btn-primary mt-3"
@@ -120,4 +102,4 @@ const LoginScreen = ({ history }) => {
     )
 }
 
-export default LoginScreen;
+export default RegisterScreen;

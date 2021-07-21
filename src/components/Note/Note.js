@@ -26,7 +26,7 @@ const Note = ({ history }) => {
             }, 500);
         } )
         
-    },[])
+    },[id])
     
     
     const handleInputChange = ({ target }) => {
@@ -54,46 +54,45 @@ const Note = ({ history }) => {
         updateNoteById(id, noteObject);
         setTimeout( () => {
             history.goBack();
-        }, 1500 );
+        }, 500 );
     }
 
     const handleDeleteNote = () => {
         deleteNoteById( id );
         setTimeout( () => {
             history.goBack();
-        }, 1500 );
+        }, 500 );
     }
     
     return (
-        <>
-            <form>
-            <div className="mb-3">
-                <label 
-                    className="form-label"
-                >Título
-                </label>
-                <input 
-                    type="text"
-                    className="form-control"
-                    name="title"
-                    value={title}
-                    onChange={handleInputChange}
-                />
-            </div>
-            <div className="mb-3">
-                <label 
-                    className="form-label"
-                >Contenido
-                </label>
-                <textarea 
-                    className="form-control" 
-                    rows="5"
-                    name="content"
-                    value={content}
-                    onChange={handleInputChange}
-                />
-            </div>
-            <button 
+        <div className="row m-4 d-flex justify-content-center">
+                    <div className="col-sm-8">
+                        <form>
+                            <div className="mb-3">
+                                <label className="form-label">Titulo</label>
+                                <input 
+                                    type="text" 
+                                    className="form-control"
+                                    name="title"
+                                    value={title}
+                                    onChange={ handleInputChange }
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div className="mb-3">
+                                <label className="form-label">Contenido</label>
+                                <textarea 
+                                    rows="4" 
+                                    cols="50" 
+                                    className="form-control"
+                                    name="content"
+                                    value={content}
+                                    onChange={ handleInputChange }
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            <button 
                 type="button" 
                 className="btn btn-outline-danger"
                 onClick={ handleDeleteNote }
@@ -105,8 +104,9 @@ const Note = ({ history }) => {
                 onClick={ handleUpdateNote }
                 >Actualizar
             </button>
-            </form>
-        </>
+                        </form> 
+                    </div>       
+                </div>
     )
 }
 

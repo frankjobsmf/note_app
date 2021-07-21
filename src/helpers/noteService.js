@@ -1,3 +1,5 @@
+
+
 const user = JSON.parse( localStorage.getItem('user') );
 
 const { token } = user;
@@ -16,6 +18,7 @@ export const testNoteService = () => {
 
 export const getNotes = async () => {
 
+
     try {
         
         const init = {
@@ -25,26 +28,28 @@ export const getNotes = async () => {
             cache: 'default'
         };
 
-        const url = new Request( `${NOTE_API_GATEWAY}/notes-userid`, init );
+        const url = new Request(`${NOTE_API_GATEWAY}/notes-userid`, init );
         const resp = await fetch( url );
         const data = await resp.json();
 
         const { notes } = data;
 
-        if ( typeof notes === 'string') {
+        if ( typeof notes === 'string'){
             return ;
+
+        }else {
+
+            const note_list = data.notes.map( nt => {
+                return {
+                    id: nt.id,
+                    title: nt.title,
+                    content: nt.content,
+                    date: nt.date
+                }
+            });
+    
+            return note_list;
         }
-
-        const note_list = notes.map( nt => {
-            return {
-                id: nt.id,
-                title: nt.title,
-                content: nt.content,
-                date: nt.date
-            }
-        });
-
-        return note_list;
 
     } catch (error) {
         console.error( error );
@@ -76,6 +81,30 @@ export const getNoteById = async ( id = null ) => {
 
     } catch (error){
         console.log( error );
+    }
+}
+
+export const addNote = async (data_note) => {
+    try{
+
+        const myInit = {
+            method: 'POST',
+            headers: header,
+            mode: 'cors',
+            cache: 'default',
+            body: JSON.stringify(data_note)
+        };
+
+
+
+        const url = new Request('http://127.0.0.1:8000/api/add', myInit);
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        console.log(data);
+            
+    } catch (error) {
+        console.log(error);
     }
 }
 

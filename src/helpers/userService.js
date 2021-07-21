@@ -9,6 +9,24 @@ export const loginAPI = () => {
     console.log('loginAPI funcionando');
 }
 
+export const RegisterUserAPI = ( user = {} ) => {
+
+    const init = {
+        method: 'POST',
+        headers: header,
+        mode: 'cors',
+        cache: 'default',
+        body: JSON.stringify( user )
+    };
+
+    try{
+        return fetch( `${ USER_API_GATEWAY }/register`, init );
+    } catch (error) {
+
+    }
+
+}
+
 export const LoginUserAPI = ( user = {} ) => {
     
     const init = {
