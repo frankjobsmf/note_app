@@ -1,6 +1,9 @@
-import React, { useEffect} from 'react';
+import axios from 'axios';
+import React, { useEffect, useState} from 'react';
 import { useReducer } from 'react';
 import { noteTypes } from '../../types/types';
+import { urlNotes } from '../../urls/endpointsNotes';
+import { urlUser } from '../../urls/endpointsUser';
 import { NoteCard } from './NoteCard';
 import { noteReducer } from './noteReducer/noteReducer';
 
@@ -12,70 +15,106 @@ const initialState = {
 
 const NoteScreen = () => {
     
+    const jwt = require('jsonwebtoken');
+
+    const [ready, setReady] = useState(false);
+
     const [state, dispatch] = useReducer(noteReducer, initialState);
+
+    const access_token = JSON.parse( localStorage.getItem( 'access' ) );
+    const refresh_token = JSON.parse( localStorage.getItem( 'refresh' ) );
     
-    const user = JSON.parse( localStorage.getItem( 'user' ) );
+    let decoded_token = jwt.decode( access_token, {complete: true} );
 
-    const { token } = user;
+    let dateNow = new Date();
 
+    if ( decoded_token.payload.exp * 1000 < dateNow.getTime()){
+        console.log('Expired')
 
-    useEffect( () => {
-        dispatch({
-            type: noteTypes.note_fetching,
-        });
-
-        fetch('http://127.0.0.1:8000/api/notes-userid', {
-            method: 'GET',
+        axios.post( urlUser.refresh, {refresh_token}, {
             headers: {
-                Authorization: token
+                'Content-Type': 'application/json'
             },
             mode: 'cors',
-            cache: 'default'
+            cache: 'default',
         })
-            .then( resp => {
-                if (resp.ok){
-                    return resp.json();
-                } else {
-                    throw resp;
-                }
-            })
-            .then( respJson => {
-                
-                const { notes } = respJson;
-                
-                console.log(notes);
-                dispatch({
-                    type: noteTypes.note_success,
-                    payload: notes
-                });
-            })
-            .catch( error => {
-                console.log(error);
+        .then( resp => {
 
-                dispatch({
-                    type: noteTypes.note_failed
-                });
-            });
-    }, [token]);
+            console.log(resp.data);
+
+            const { access_token, refresh_token } = resp.data;
+
+            localStorage.setItem('access', JSON.stringify(access_token));
+            localStorage.setItem('refresh', JSON.stringify(refresh_token));
+        })
+    }else {
+        console.log( 'valid');
+    }
     
+    
+    
+    useEffect( () => {
+        
+        dispatch({
+            type: noteTypes.note_fetching
+        })
+
+        axios.get( urlNotes.getNotesByIdUser, {
+            headers: { 
+                'Authorization': access_token , 
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors',
+            cache: 'default',
+        })
+        .then( resp => {
+            
+            setReady(true);
+            
+            const notes_list = resp.data.notes;
+
+            console.log( notes_list );
+
+            dispatch({
+                type: noteTypes.note_success,
+                payload: notes_list
+            });
+        })
+        .catch( error => {
+            
+            console.log(error);
+
+            dispatch({
+                type: noteTypes.note_failed
+            });
+        });
+
+    },[ ready ] );
+    
+    const postList = state.notes.length ? (
+        state.notes.map( note => {
+            return <NoteCard 
+                key={ note.id }
+                id={note.id}
+                title={note.title}
+                content={note.content}
+                date={note.date}
+            />
+        })
+    ): (
+        <p className="text-center">Vaya, parece que aun no tienes notas creadas!</p>
+    )
+
     return (
         <>
             <div className="container mt-3 animate__animated animate__fadeIn">
                 <div className="row row-cols-1 row-cols-md-3 g-4">
                     {
+
                         state.hasError ? (
                             <span>HUBO UN ERROR!!!</span>
                         ) : (
-                            state.notes.length > 0 &&
-                                state.notes.map( nt => (
-                                    <NoteCard 
-                                        key={ nt.id }
-                                        id={nt.id}
-                                        title={nt.title}
-                                        content={nt.content}
-                                        date={nt.date}
-                                    />
-                                ))
+                            postList
                         )
                     }
                 </div>

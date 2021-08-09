@@ -1,12 +1,15 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../../auth/AuthContext';
-import { LoginUserAPI } from '../../helpers/userService';
 import { useForm } from '../../hooks/useForm';
 import { types } from '../../types/types';
-import jwt_decode from 'jwt-decode';
+import axios from 'axios';
+import { urlUser } from '../../urls/endpointsUser';
+
 
 const LoginScreen = ({ history }) => {
 
+    const jwt = require('jsonwebtoken');
+    
     const { dispatch } = useContext( AuthContext );
 
     const [ value, handleInputChange ] = useForm({
@@ -29,30 +32,29 @@ const LoginScreen = ({ history }) => {
                 password: password
             }
 
-            const token = LoginUserAPI( person );
+            axios.post(urlUser.signin, person)
+                .then( resp => {
+                    
+                    console.log(resp)
 
-            token
-                .then( resp => resp.json() )
-                .then( data => {
-                    console.log( data.token );
-                
-                    const { token } = data;
+                    const { access_token, refresh_token } = resp.data;
 
-                    let decoded_token = jwt_decode( token );
+                    localStorage.setItem('access', JSON.stringify(access_token));
+                    localStorage.setItem('refresh', JSON.stringify(refresh_token));
 
+                    const decoded_token = jwt.decode( access_token );
 
                     const user = {
                         id: decoded_token.user.id,
-                        username: decoded_token.user.username,
-                        token: data.token
+                        username: decoded_token.user.username
                     }
-                    
 
                     dispatch({
                         type: types.login,
                         payload: user
-                    });
-                } );
+                    })
+
+                });
         }
 
     }

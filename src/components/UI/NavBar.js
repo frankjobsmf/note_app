@@ -10,6 +10,10 @@ const Navbar = () => {
     const history = useHistory();    
 
     const handleLogout = () => {
+
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
+
         dispatch({
             type: types.logout
         });
