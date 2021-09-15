@@ -1,54 +1,53 @@
-const header = new Headers({
-    'Content-Type': 'application/json'
-});
+import axios from "axios";
 
-//ENDPOINT BACKEND DJANGO API GATEWAY
-const USER_API_GATEWAY = 'http://127.0.0.1:8000/api';
+const API_URL = 'http://127.0.0.1:8000/api/';
 
-export const loginAPI = () => {
-    console.log('loginAPI funcionando');
-}
+const jwt = require('jsonwebtoken');
 
-export const RegisterUserAPI = ( user = {} ) => {
+const registerService = (username, email, password) => {
+    return axios.post(
+        API_URL + 'register',
+        {
+            username,
+            email,
+            password
+        }
+    );
+};
 
-    const init = {
-        method: 'POST',
-        headers: header,
-        mode: 'cors',
-        cache: 'default',
-        body: JSON.stringify( user )
-    };
+const loginService = ( username, password ) => {
 
-    try{
-        return fetch( `${ USER_API_GATEWAY }/register`, init );
-    } catch (error) {
+    return axios.post( 
+        API_URL + 'login',
+        { username, password }
+    )
+    .then( ( response ) => {
+        if ( response.data.access_token ){
 
-    }
+            const access_token = response.data.access_token;
+            const refresh_token = response.data.refresh_token;
 
-}
+            const decoded_token = jwt.decode( response.data.access_token );
 
-export const LoginUserAPI = ( user = {} ) => {
-    
-    const init = {
-        method: 'POST',
-        headers: header,
-        mode: 'cors',
-        cache: 'default',
-        body: JSON.stringify( user )
-    };
-    
-    try {
-      
-        return fetch( `${USER_API_GATEWAY}/login`, init );
-            // .then( ( response ) => {
-            //     response.json().then( ( data ) => {
-            //         return data;
-            //     } ).catch( ( error ) => {
-            //         console.error( `Este es el mensaje de error: ${error}` );
-            //     } )
-            // } )
+            const user = {
+                id: decoded_token.user.id,
+                username: decoded_token.user.username,
+            }
 
-    } catch (error) {
-        console.error( error );
-    }
-}
+            localStorage.setItem( 'access_token', JSON.stringify( access_token ) );
+            localStorage.setItem( 'refresh_token', JSON.stringify( refresh_token ));
+
+            return user;
+        }
+    });
+};
+
+const logoutService = () => {
+    localStorage.removeItem("access_token");
+};
+
+export {
+    registerService,
+    loginService,
+    logoutService,
+};

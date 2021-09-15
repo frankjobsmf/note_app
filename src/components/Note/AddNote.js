@@ -1,50 +1,29 @@
 import React from 'react';
 import { useForm } from '../../hooks/useForm';
+import { useDispatch } from 'react-redux';
+import { addNoteAction } from '../../actions/notes';
+import { useHistory } from 'react-router-dom';
 
 
-const AddNote = ({ history }) => {
+const AddNote = () => {
+    
 
-    const user = JSON.parse( localStorage.getItem( 'user' ) ) || { logged: false};
-
-    const { token } = user;
+    const history = useHistory();
+    const dispatch = useDispatch();
 
     const [ value, handleInputChange ] = useForm({
-        title: '',
-        content: '',
+        'title': '',
+        'content': '',
     });
 
     const { title, content } = value;
 
-
-    //objeto note
-    const noteObject = {
-        title: title,
-        content: content
-    }
-    
     const handleAddNote = (e) => {
         e.preventDefault();
 
-        if( title === '' && content === '' ){
-            return;
-        }
-
-        fetch('http://127.0.0.1:8000/api/add', {
-            method: 'POST',
-            headers: {
-                Authorization: token,
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors',
-            cache: 'default',
-            body: JSON.stringify(noteObject)
-        })
-
-
-        setTimeout( () => {
-            history.push('/');
-        }, 500 );
-    }
+        dispatch( addNoteAction( title, content ) );
+        history.push('/');
+    };
 
 
 

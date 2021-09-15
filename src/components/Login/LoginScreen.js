@@ -1,16 +1,11 @@
-import React, { useContext } from 'react';
-import { AuthContext } from '../../auth/AuthContext';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { useForm } from '../../hooks/useForm';
-import { types } from '../../types/types';
-import axios from 'axios';
-import { urlUser } from '../../urls/endpointsUser';
-
+import { loginAction } from '../../actions/auth';
 
 const LoginScreen = ({ history }) => {
 
-    const jwt = require('jsonwebtoken');
-    
-    const { dispatch } = useContext( AuthContext );
+    const dispatch = useDispatch();
 
     const [ value, handleInputChange ] = useForm({
         username: '',
@@ -27,36 +22,9 @@ const LoginScreen = ({ history }) => {
             return;
         } else {
 
-            const person = {
-                username: username,
-                password: password
-            }
-
-            axios.post(urlUser.signin, person)
-                .then( resp => {
-                    
-                    console.log(resp)
-
-                    const { access_token, refresh_token } = resp.data;
-
-                    localStorage.setItem('access', JSON.stringify(access_token));
-                    localStorage.setItem('refresh', JSON.stringify(refresh_token));
-
-                    const decoded_token = jwt.decode( access_token );
-
-                    const user = {
-                        id: decoded_token.user.id,
-                        username: decoded_token.user.username
-                    }
-
-                    dispatch({
-                        type: types.login,
-                        payload: user
-                    })
-
-                });
+            dispatch( loginAction( username, password ) );
+            
         }
-
     }
 
     const handleRegister = (e) => {

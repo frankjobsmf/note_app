@@ -1,5 +1,5 @@
 import React from 'react';
-import { RegisterUserAPI } from '../../helpers/userService';
+// import { RegisterUserAPI } from '../../helpers/userService';
 import { useForm } from '../../hooks/useForm';
 
 const RegisterScreen = ({ history }) => {
@@ -26,18 +26,18 @@ const RegisterScreen = ({ history }) => {
                 password: password
             }
 
-            const data = RegisterUserAPI( person );
+            // const data = RegisterUserAPI( person );
 
-            data
-                .then( response => {
-                    if ( response.ok){
-                        setTimeout( () => {
-                            history.push( '/login' )
-                        }, 500)
-                    }else{
-                        return ;
-                    }
-                } )
+            // data
+            //     .then( response => {
+            //         if ( response.ok){
+            //             setTimeout( () => {
+            //                 history.push( '/login' )
+            //             }, 500)
+            //         }else{
+            //             return ;
+            //         }
+            //     } )
 
         }
 

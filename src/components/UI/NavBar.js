@@ -1,12 +1,11 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useHistory } from 'react-router-dom';
-import { AuthContext } from '../../auth/AuthContext';
-import { types } from '../../types/types';
+import { authTypes, noteTypes } from '../../types/types';
 
 const Navbar = () => {
 
-    const { user, dispatch } = useContext(AuthContext);
-    
+    const dispatch = useDispatch();
     const history = useHistory();    
 
     const handleLogout = () => {
@@ -15,9 +14,16 @@ const Navbar = () => {
         localStorage.removeItem('refresh');
 
         dispatch({
-            type: types.logout
+            type: noteTypes.note_logout
+        })
+
+        dispatch({
+            type: authTypes.logout
         });
 
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        
         history.replace('/login');
     }
 
@@ -38,17 +44,6 @@ const Navbar = () => {
                         activeClassName="active"
                         className="nav-item nav-link" 
                         exact
-                        to="/profile"
-                    >
-                        Perfil
-                    </NavLink>
-                </div>
-                <div className="navbar-nav">
-
-                    <NavLink 
-                        activeClassName="active"
-                        className="nav-item nav-link" 
-                        exact
                         to="/add-note"
                     >
                         Crear
@@ -59,15 +54,11 @@ const Navbar = () => {
             
 
 
-            <div className="navbar-collapse collapse w-100 order-3 dual-collapse2 position-relative">      
+            <div className="navbar-collapse collapse w-100 order-3 dual-collapse2">      
                 <ul className="navbar-nav ml-auto">
-                    <span className="nav-item nav-link text-info ">
-                        { user.username }
-                    </span>
-                    
                     <button 
                         onClick={ handleLogout }
-                        className="nav-item nav-link btn position-absolute top-0 end-0" 
+                        className="nav-item nav-link btn" 
                     >
                         Logout
                     </button>

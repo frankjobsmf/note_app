@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
 import LoginScreen from '../components/Login/LoginScreen';
 import RegisterScreen from '../components/Login/RegisterScreen';
 import { DashboardRoutes } from './DashboardRoutes';
@@ -9,15 +9,17 @@ import PublicRoute from './PublicRoute';
 
 const AppRouter = () => {
 
-    const { user } = useContext( AuthContext );
+    const userAuth = useSelector(state => state.auth);
+
+    const { isLoggedIn } = userAuth;
 
     return (
         <Router>
             <div>
                 <Switch>
-                    <PublicRoute exact isAuthenticated={ user.logged } path="/login" component={ LoginScreen }/>
-                    <PublicRoute exact isAuthenticated={ user.logged } path="/register" component={ RegisterScreen }/>
-                    <PrivateRoute  path="/" isAuthenticated={ user.logged } component={ DashboardRoutes }/>
+                    <PublicRoute exact isAuthenticated={ isLoggedIn } path="/login" component={ LoginScreen }/>
+                    <PublicRoute exact isAuthenticated={ isLoggedIn } path="/register" component={ RegisterScreen }/>
+                    <PrivateRoute  path="/" isAuthenticated={ isLoggedIn } component={ DashboardRoutes }/>
                 </Switch>
             </div>
         </Router>
