@@ -30,6 +30,13 @@ export const addNoteAction = ( title, content ) => ( dispatch ) => {
 
     addNote( title, content );
 
-    dispatch( { type: noteTypes.note_add} );
+    const notePayload = {
+        title: title, content: content
+    };
+
+    dispatch({ 
+        type: noteTypes.note_add,
+        payload: [notePayload]
+    });
 
 };

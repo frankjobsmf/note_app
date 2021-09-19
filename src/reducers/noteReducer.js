@@ -14,8 +14,12 @@ export const noteReducer = ( state = initialState, action ) => {
             };
 
         case noteTypes.note_add:
+
+            console.log( action.payload );
+
             return {
                 ...state,
+                notes: [ action.payload ]
             };
 
         case noteTypes.note_logout:

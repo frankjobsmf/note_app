@@ -15,8 +15,6 @@ const getAllNotesByUser = async () => {
 const addNote = ( title, content ) => {
     axiosAPI.post( '/add', { title, content } );
 
-    return Promise.resolve();
-
 }
 
 export {

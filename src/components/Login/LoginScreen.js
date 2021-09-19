@@ -37,7 +37,7 @@ const LoginScreen = ({ history }) => {
 
     return (
         <div className="container mt-5">
-            <h2 className="text-center">NoteApp - Iniciar sesión</h2>
+            <h2 className="title-noteapp text-center">NoteApp</h2>
             <hr />
 
 

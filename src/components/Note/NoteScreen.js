@@ -10,7 +10,7 @@ const NoteScreen = () => {
 
     useEffect(() => {
         dispatch( getAllNotesByUserAction() );
-    }, []);
+    }, [dispatch]);
 
 
     return (

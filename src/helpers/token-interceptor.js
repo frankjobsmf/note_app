@@ -11,10 +11,7 @@ const axiosAuth = axios.create({
 });
 
 const axiosAPI = axios.create({
-  baseURL: API_URL, 
-  // headers: {
-  //   'Authorization': JSON.parse( localStorage.getItem( 'access_token' ))
-  // },
+  baseURL: API_URL,
   mode: 'cors',
   cache: 'default',
 });
@@ -28,12 +25,18 @@ axiosAPI.interceptors.request.use(
     const decoded_token = jwt.decode( accessToken );
     const decoded_refreshToken = jwt.decode( refreshToken );
 
+    // validacion de tiempo de expiracion para el token de acceso
     if ( Date.now() >= decoded_token.exp * 1000 ) {
  
+      // se validara si el tiempo de expiracion del refresh token es mayor al tiempo actual
+      // en caso de que el tiempo de expiracion del rf sea mayor al actual,
+      // realizaremos el proceso para el solicitar un nuevo access token y un refresh token
 
       if ( Date.now() <= decoded_refreshToken.exp * 1000){
         const response = await axiosAuth.post( '/refresh-token', { refresh_token: refreshToken })
-          
+
+
+        // validamos que la peticion realizada tenga informacion
         if ( response ) {
           const { access_token, refresh_token } = response.data;
   
@@ -41,12 +44,16 @@ axiosAPI.interceptors.request.use(
           localStorage.setItem( 'refresh_token', JSON.stringify( refresh_token ) )
   
           config.headers = {
+            // asignamos el nuevo access token que se guardo en el localStorage
             'Authorization': JSON.parse( localStorage.getItem( 'access_token' )),
             'Content-Type': 'application/json'
           }
           
           return config;
         }
+
+      // en caso de que el tiempo de expiracion del rf sea menos al tiempo actual,
+      // se cerrara la sesion del usuario y se eliminaran ambos token del localStorage
       } else {
 
         localStorage.removeItem( 'access_token' );
@@ -56,7 +63,8 @@ axiosAPI.interceptors.request.use(
 
       }
 
-
+    // en caso de que el tiempo de expiracion del access token sea mayor al tiempo actual,
+    // se procedera con la peticion, manteniendo la configuracion original
     } else {
       config.headers = {
         'Authorization': JSON.parse( localStorage.getItem( 'access_token' )),
@@ -72,8 +80,5 @@ axiosAPI.interceptors.request.use(
   }
 
 );
-
-// response interceptor
-
 
 export { axiosAPI };
